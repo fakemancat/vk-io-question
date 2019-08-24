@@ -1,0 +1,8 @@
+{
+  "name": "vk-io-question",
+  "version": "1.0.0.alpha-1",
+  "description": "Система \"Вопрос-Ответ\" для библиотеки VK-IO",
+  "main": "index.js",
+  "author": "Fakeman Cat",
+  "license": "MIT"
+}
