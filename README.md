@@ -3,7 +3,7 @@
 Небольшой модуль для системы "Вопрос-Ответ".
 Интегрируется в цепь *middleware*  vk-io
 
-[![npm package](https://nodei.co/npm/vk-io-question.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/vk-io-questioni/)
+[![npm package](https://nodei.co/npm/vk-io-question.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/vk-io-question/)
 <p>
 <a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/npm/v/vk-io-question.svg" alt="Version"></a>
 <a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/npm/dt/vk-io-question.svg" alt="Downloads"></a>
