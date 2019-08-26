@@ -33,11 +33,11 @@ class QuestionManager {
                 });
 
                 delete this.questions[context.senderId];
-                return next();
+                return;
             }
 
             /**
-             * @param {string} message Отправляемое сообщение (вопрос)
+             * @param {string} message  Отправляемое сообщение (вопрос)
              * @param {Object} [params] Параметры сообщения
              */
             context.question = async(message, params = {}) => {
@@ -47,10 +47,12 @@ class QuestionManager {
                     );
                 }
 
-                context.send(message, params);
+                await context.send(message, params);
 
                 return new Promise((resolve) => {
-                    this.questions[context.senderId] = {
+                    this.questions[
+                        params.targetUserId || context.senderId
+                    ] = {
                         resolve,
                         startTime: Date.now()
                     };

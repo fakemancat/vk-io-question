@@ -56,3 +56,144 @@ vk.updates.hear('/reg', async(context) => {
 
 vk.updates.startPolling();
 ```
+----
+Метод отправки вопроса
+
+```js
+const answer = await context.question(message, params);
+```
+
+|Параметр|Тип|Описание|
+|-|-|-|
+|message|string|Задаваемый вопрос|
+|params|Object|Параметры ссобщения|
+
+Ответ
+
+|Параметр|Тип|Описание|
+|-|-|-|
+|answer|Promise<Object>|Основной объект ответа|
+|answer.text|string|Текст сообщения|
+|answer.time|number|Время ответа в ms|
+|answer.payload|*|payload ответного сообщения (полезно при использовании клавиатуры)|
+
+### Специальные возможности
+* targetUserId - задаёт вопрос определённому пользователю
+
+**Примеры**
+Смоделируем ситуцию: в беседе между людьми идёт игра (викторина), и боту нужно задать вопрос одного человека другому
+
+```js
+vk.updates.hear('/задать вопрос', async(context) => {
+    const questionToUser = await context.question(
+        'Напишите свой вопрос следующим сообщением'
+    );
+
+    const recipient = await context.question(
+        'Теперь отправьте ссылку пользователя, кому нужно задать вопрос'
+    );
+
+    const user = await vk.snippets.resolveResource(recipient.text);
+
+    const userAnswer = await context.question(
+        `@id${user.id}, Вам вопрос: ${questionToUser.text}\n\nОтвет дайте следующим сообщением`,
+        {
+            targetUserId: user.id
+        }
+    );
+
+    await context.send(`Итак, Ваш ответ: ${userAnswer.text}`);
+
+    /*
+     * Тут сами придумываете логику, это был лишь грубый и наглядный пример
+     */
+});
+```
+
+Проще говоря, бот будет ждать ответа именно от пользователя, айди которого был указан в ```targetUserId```.
+
+По умолчанию вопрос задаётся отправителю сообщения (```context.senderId```)
+
+------------
+Ещё можно сделать что-то типа анонимных сообщений с получением реакции:
+```js
+vk.updates.hear(/^(?:\/anon)\s*(?<text>.*)/i, async(context) => {
+    let { text } = context.$match.groups;
+
+    if (!text) {
+        text = (await context.question(
+            'Напишите текст анонимного сообщения'
+        )).text;
+    }
+
+    const recipient = await context.question(
+        'Теперь отправьте ссылку пользователя, кому нужно отправить анонимное сообщение'
+    );
+
+    const user = await vk.snippets.resolveResource(recipient.text);
+
+    const userAnswer = await context.question(
+        `Вам анонимное сообщение:\n\n${text}`,
+        {
+            user_id: user.id, // Отправить сообщение в ЛС этому пользователю
+            targetUserId: user.id // Ожидать ответ от него же
+        }
+    );
+
+    await context.send(
+        `@id${user.id} ответил "${userAnswer.text}"`
+    );
+});
+```
+* Получение payload
+
+**Примеры**
+Давайте на команду ```/choice``` давать пользователю выбор из двух цветов, по нажатию на любую из которых, он получит факт о выбранном цвете
+
+```js
+const { Keyboard } = require('vk-io');
+
+vk.updates.hear('/choice', async(context) => {
+    const answer = await context.question(
+        'Зелёный или синий?',
+        {
+            keyboard: Keyboard.keyboard([
+                [
+                    Keyboard.textButton({
+                        label: 'Зелёный',
+                        color: 'positive',
+                        payload: {
+                            choice: 'green'
+                        }
+                    }),
+                    Keyboard.textButton({
+                        label: 'Синий',
+                        color: 'positive',
+                        payload: {
+                            choice: 'blue'
+                        }
+                    })
+                ]
+            ]).oneTime()
+        }
+    );
+
+    if (!answer.payload) {
+        await context.send('Отвечать нужно было нажатием на кнопку');
+
+        return;
+    }
+
+    if (answer.payload.choice === 'green') {
+        await context.send('Человеский глаз наиболее хорошо различает оттенки именно зеленого цвета.');
+
+        return;
+    }
+
+    if (answer.payload.choice === 'blue') {
+        await context.send('Синий краситель долгое время был одним из самых дорогих, потому что его изготавливали из лазурита.');
+
+        return;
+    }
+});
+```
