@@ -1,9 +1,16 @@
 {
   "name": "vk-io-question",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Система \"Вопрос-Ответ\" для библиотеки VK-IO",
   "main": "index.js",
   "author": "Fakeman Cat",
   "license": "MIT",
-  "repository": "https://github.com/fakemancat/vk-io-question"
+  "repository": "https://github.com/fakemancat/vk-io-question",
+  "keywords": [
+    "vk",
+    "vk-io",
+    "question",
+    "vkontakte",
+    "middleware"
+  ]
 }
