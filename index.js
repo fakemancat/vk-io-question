@@ -7,12 +7,36 @@
  * P.S. Как серьёзный проект типа "node-vkcoinapi" не задумывается
  */
 
+class Answer {
+    constructor({
+        text,
+        payload,
+        forwards,
+        duration,
+        attachments,
+    }) {
+        this.text = text;
+        this.payload = payload;
+        this.forwards = forwards;
+        this.duration = duration;
+        this.attachments = attachments;
+    }
+
+    get [Symbol.toStringTag]() {
+        return this.constructor.name;
+    }
+}
+
 class QuestionManager {
     /**
      * Непойми зачем конструктор)()(
      */
     constructor() {
-        this.questions = {};
+        this.questions = new Map();
+    }
+
+    get [Symbol.toStringTag]() {
+        return this.constructor.name;
     }
 
     /**
@@ -21,19 +45,26 @@ class QuestionManager {
      */
     get middleware() {
         return async(context, next) => {
-            if (!context.is('message')) return next();
+            if (!context.is('message')) {
+                await next();
 
-            const currentQuestion = this.questions[context.senderId];
-
-            if (currentQuestion) {
-                currentQuestion.resolve({
-                    text: context.text,
-                    payload: context.messagePayload,
-                    time: Date.now() - currentQuestion.startTime
-                });
-
-                delete this.questions[context.senderId];
                 return;
+            }
+
+            if (this.questions.has(context.senderId)) {
+                const currentQuestion = this.questions.get(context.senderId);
+
+                currentQuestion.resolve(
+                    new Answer({
+                        text: context.text,
+                        forwards: context.forwards,
+                        payload: context.messagePayload,
+                        attachments: context.attachments,
+                        duration: Date.now() - currentQuestion.startTime
+                    })
+                );
+
+                return this.questions.delete(context.senderId);
             }
 
             /**
@@ -42,7 +73,7 @@ class QuestionManager {
              */
             context.question = async(message, params = {}) => {
                 if (!message) {
-                    throw new ReferenceError(
+                    throw new TypeError(
                         'Parameter `message` is required'
                     );
                 }
@@ -50,16 +81,16 @@ class QuestionManager {
                 await context.send(message, params);
 
                 return new Promise((resolve) => {
-                    this.questions[
-                        params.targetUserId || context.senderId
-                    ] = {
+                    const userId = params.targetUserId || context.senderId;
+
+                    this.questions.set(userId, {
                         resolve,
                         startTime: Date.now()
-                    };
+                    });
                 });
             };
             
-            next();
+            await next();
         };
     }
 }
