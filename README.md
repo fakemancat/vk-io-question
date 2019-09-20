@@ -72,10 +72,12 @@ const answer = await context.question(message, params);
 
 |Параметр|Тип|Описание|
 |-|-|-|
-|answer|Promise<Object>|Основной объект ответа|
+|answer|Promise\<Answer\>|Основной объект ответа|
 |answer.text|string|Текст сообщения|
-|answer.time|number|Время ответа в ms|
 |answer.payload|*|payload ответного сообщения (полезно при использовании клавиатуры)|
+|answer.duration|number|Время ответа в ms|
+|answer.forwards|MessageForwardsCollection[]|Пересланные сообщения|
+|answer.attachments|Attachment[]|Вложения ответного сообщения|
 
 ### Специальные возможности
 * targetUserId - задаёт вопрос определённому пользователю
@@ -199,3 +201,31 @@ vk.updates.hear('/choice', async(context) => {
     }
 });
 ```
+
+* attachments
+
+**Примеры**
+
+Мы можем получать в ответ любое вложение. Например давайте сделаем функцию обработки фотографии:
+
+```js
+vk.updates.hear('/обработка фото', async(context) => {
+    const answer = await context.question(
+        'Отправьте фото, которое хотите обработать'
+    );
+
+    const filter = await context.question(
+        'Теперь название фильтра *список доступных фильтров*'
+    );
+
+    const newPhoto = await myAwesomeFunction(
+        answer.attachments[0].largePhoto, filter
+    );
+
+    await context.sendPhoto(newPhoto, {
+        message: 'Вот твоя новая фотография!'
+    });
+});
+```
+
+Такая же история работает и с ```Answer.forwards```
