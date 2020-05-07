@@ -1,0 +1,34 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "no-eval": false,
+        "semicolon": true,
+        "new-parens": true,
+        "class-name": true,
+        "no-bitwise": false,
+        "no-console": false,
+        "prefer-while": true,
+        "prefer-const": false,
+        "prefer-for-of": true,
+        "triple-equals": true,
+        "arrow-parens": false,
+        "no-var-requires": true,
+        "no-require-imports": true,
+        "space-within-parens": true,
+        "array-type": [true, "array"],
+        "no-shadowed-variable": false,
+        "quotemark": [true, "single"],
+        "indent": [true, "spaces", 4],
+        "number-literal-format": true,
+        "no-consecutive-blank-lines": [true, 1],
+        "object-literal-key-quotes": [true, "as-needed"],
+        "one-line": [true, "check-catch", "check-finally", "check-else"],
+        "trailing-comma": [true, {"multiline": "never", "singleline": "never"}],
+        "comment-format": [true, "check-space", "check-uppercase", "allow-trailing-lowercase"],
+        "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}]
+    },
+    "rulesDirectory": []
+}

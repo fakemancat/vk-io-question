@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strictBindCallApply": true,
+        "strictFunctionTypes": true,
+        "strictPropertyInitialization": false,
+        "module": "ESNext",
+        "target": "ES2020",
+        "moduleResolution": "Node",
+        "allowJs": true,
+        "alwaysStrict": true,
+        "declaration": true
+    }
+}

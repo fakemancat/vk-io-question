@@ -21,18 +21,65 @@ yarn add vk-io-question
 ```
 
 ### Использование
+JavaScript
+
 ```js
 const { VK } = require('vk-io');
 const vk = new VK({
     token: process.env.TOKEN
 });
 
-const QuestionManager = require('vk-io-question');
+const { QuestionManager } = require('vk-io-question');
 const questionManager = new QuestionManager();
 
 vk.updates.use(questionManager.middleware);
 
-vk.updates.hear('/reg', async(context) => {
+vk.updates.hear('/reg', async (context) => {
+    const answer = await context.question(
+        'Согласны-ли Вы на обработку персональных данных?'
+    );
+
+    if (!/да|yes|согласен|конечно/i.test(answer.text)) {
+        await context.send('Тогда, мы не можем совершить регистрацию');
+
+        return;
+    }
+
+    await context.send('Отлично, тогда продолжим');
+
+    const age = await context.question('Введите Ваш возраст');
+    const email = await context.question('Введите Ваш имейл');
+    const phone = await context.question('Введите Ваш номер телефона');
+
+    await context.send(
+        `Возраст: ${age.text}\nЭл. адрес: ${email.text}\nТелефон: ${phone.text}`
+    );
+});
+
+vk.updates.startPolling();
+```
+
+TypeScript
+```ts
+import { VK } = from 'vk-io';
+const vk = new VK({
+    token: process.env.TOKEN
+});
+
+import {
+    QuestionManager,
+    IQuestionMessageContext
+} = from 'vk-io-question';
+
+const questionManager = new QuestionManager();
+
+vk.updates.use(questionManager.middleware);
+
+/**
+ * Для получения подсказок обязательно нужно присвоить
+ * Интерфейс IQuestionMessageContext данному контексту
+ */
+vk.updates.hear('/reg', async (context: IQuestionMessageContext) => {
     const answer = await context.question(
         'Согласны-ли Вы на обработку персональных данных?'
     );
@@ -87,7 +134,7 @@ const answer = await context.question(message, params);
 Смоделируем ситуцию: в беседе между людьми идёт игра (викторина), и боту нужно задать вопрос одного человека другому
 
 ```js
-vk.updates.hear('/задать вопрос', async(context) => {
+vk.updates.hear('/задать вопрос', async (context) => {
     const questionToUser = await context.question(
         'Напишите свой вопрос следующим сообщением'
     );
@@ -120,7 +167,7 @@ vk.updates.hear('/задать вопрос', async(context) => {
 ------------
 Ещё можно сделать что-то типа анонимных сообщений с получением реакции:
 ```js
-vk.updates.hear(/^(?:\/anon)\s*(?<text>.*)/i, async(context) => {
+vk.updates.hear(/^(?:\/anon)\s*(?<text>.*)/i, async (context) => {
     let { text } = context.$match.groups;
 
     if (!text) {
@@ -157,7 +204,7 @@ vk.updates.hear(/^(?:\/anon)\s*(?<text>.*)/i, async(context) => {
 ```js
 const { Keyboard } = require('vk-io');
 
-vk.updates.hear('/choice', async(context) => {
+vk.updates.hear('/choice', async (context) => {
     const answer = await context.question(
         'Зелёный или синий?',
         {
@@ -209,7 +256,7 @@ vk.updates.hear('/choice', async(context) => {
 Мы можем получать в ответ любое вложение. Например давайте сделаем функцию обработки фотографии:
 
 ```js
-vk.updates.hear('/обработка фото', async(context) => {
+vk.updates.hear('/обработка фото', async (context) => {
     const answer = await context.question(
         'Отправьте фото, которое хотите обработать'
     );
