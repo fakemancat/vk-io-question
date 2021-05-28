@@ -61,7 +61,7 @@ vk.updates.startPolling();
 
 TypeScript
 ```ts
-import { VK } = from 'vk-io';
+import { VK } from 'vk-io';
 const vk = new VK({
     token: process.env.TOKEN
 });
@@ -69,7 +69,7 @@ const vk = new VK({
 import {
     QuestionManager,
     IQuestionMessageContext
-} = from 'vk-io-question';
+} from 'vk-io-question';
 
 const questionManager = new QuestionManager();
 
