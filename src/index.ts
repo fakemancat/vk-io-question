@@ -17,7 +17,7 @@ class QuestionManager {
      */
     get middleware(): Middleware<IQuestionMessageContext> {
         return async (context: IQuestionMessageContext, next: NextMiddleware)=> {
-            if (!context.is('message')) {
+            if (!context.is(['message'])) {
                 await next();
 
                 return;
@@ -28,7 +28,7 @@ class QuestionManager {
             if (currentQuestion) {
                 currentQuestion.resolve(
                     new Answer({
-                        text: context.text,
+                        text: context.text || null,
                         forwards: context.forwards,
                         payload: context.messagePayload,
                         attachments: context.attachments,

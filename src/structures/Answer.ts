@@ -1,5 +1,5 @@
 import { Attachment, ExternalAttachment } from 'vk-io';
-import MessageForward from 'vk-io/lib/structures/shared/message-forward';
+import { MessageForwardsCollection } from 'vk-io/lib/structures/shared/message-forward-collection';
 
 export class Answer {
     /**
@@ -9,7 +9,10 @@ export class Answer {
     /**
      * Коллекция пересланных сообщений ответного сообщения
      */
-    public forwards: MessageForward[];
+    public forwards: MessageForwardsCollection;
+    /**
+     * MessagePayload ответного сообщения
+     */
     public payload: any;
     /**
      * Коллекция вложения ответного сообщениыя
@@ -28,7 +31,7 @@ export class Answer {
         duration
     }: {
         text: string | null,
-        forwards: MessageForward[],
+        forwards: MessageForwardsCollection,
         payload: any,
         attachments: (Attachment<{}> | ExternalAttachment<{}>)[],
         duration: number
