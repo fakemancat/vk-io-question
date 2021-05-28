@@ -6,4 +6,6 @@ export interface IQuestionParams extends Params.MessagesSendParams {
      * @default context.senderId
      */
     targetUserId?: number;
+
+    [key: string]: any;
 }

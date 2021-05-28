@@ -1,6 +1,6 @@
 {
   "name": "vk-io-question",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Система \"Вопрос-Ответ\" для библиотеки VK-IO",
   "main": "lib/index",
   "module": "lib/index.mjs",
