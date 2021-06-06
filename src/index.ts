@@ -3,13 +3,18 @@
 import { Middleware, NextMiddleware } from 'middleware-io';
 
 import { Answer } from './structures';
-import { IQuestion, IQuestionParams, IQuestionMessageContext } from './interfaces';
+import { IQuestion, IQuestionParams, IQuestionMessageContext, IQuestionManagerParams } from './interfaces';
 
 class QuestionManager {
     private questions: Map<number, IQuestion> = new Map();
+    private answerTimeLimit: number = 0;
 
     get [Symbol.toStringTag](): string {
         return this.constructor.name;
+    }
+
+    public constructor(params: IQuestionManagerParams) {
+        this.answerTimeLimit = params.answerTimeLimit || 0;
     }
 
     /**
@@ -61,6 +66,26 @@ class QuestionManager {
                         resolve,
                         startTime: Date.now()
                     });
+
+                    if (this.answerTimeLimit > 0) {
+                        setTimeout(() => {
+                            const currentQuestion = this.questions.get(context.senderId);
+
+                            if (currentQuestion) {
+                                resolve(
+                                    new Answer({
+                                        text: null,
+                                        forwards: null,
+                                        payload: null,
+                                        attachments: null,
+                                        duration: Date.now() - currentQuestion.startTime
+                                    })
+                                );
+
+                                return this.questions.delete(context.senderId);
+                            }
+                        }, this.answerTimeLimit);
+                    }
                 });
             };
 

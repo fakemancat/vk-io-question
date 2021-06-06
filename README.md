@@ -103,6 +103,12 @@ vk.updates.hear('/reg', async (context: IQuestionMessageContext) => {
 
 vk.updates.startPolling();
 ```
+
+Параметры конструктора
+|Параметр|Тип|Обязатален|Описание|
+|-|-|-|-|
+|answerTimeLimit|number (ms)|Нет|Устанавливает ограничение по времени на ответ. В случае истечения этого времени, в объекте Answer все поля будут ```null```|
+
 ----
 Метод отправки вопроса
 

@@ -9,7 +9,7 @@ export class Answer {
     /**
      * Коллекция пересланных сообщений ответного сообщения
      */
-    public forwards: MessageForwardsCollection;
+    public forwards: MessageForwardsCollection | null;
     /**
      * MessagePayload ответного сообщения
      */
@@ -17,7 +17,7 @@ export class Answer {
     /**
      * Коллекция вложения ответного сообщениыя
      */
-    public attachments: (Attachment<{}> | ExternalAttachment<{}>)[];
+    public attachments: (Attachment<{}> | ExternalAttachment<{}>)[] | null;
     /**
      * Время, спустя которое пользователь дал ответ
      */
@@ -31,9 +31,9 @@ export class Answer {
         duration
     }: {
         text: string | null,
-        forwards: MessageForwardsCollection,
+        forwards: MessageForwardsCollection | null,
         payload: any,
-        attachments: (Attachment<{}> | ExternalAttachment<{}>)[],
+        attachments: (Attachment<{}> | ExternalAttachment<{}>)[] | null,
         duration: number
     }) {
         this.text = text;
