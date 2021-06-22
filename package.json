@@ -10,7 +10,8 @@
   "license": "MIT",
   "repository": "https://github.com/fakemancat/vk-io-question",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "test:eslint": "eslint --ext .ts --ignore-path .gitignore ."
   },
   "keywords": [
     "vk",
@@ -21,6 +22,11 @@
   ],
   "devDependencies": {
     "@types/node": "^13.9.5",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
     "rollup": "^2.7.6",
     "rollup-plugin-typescript2": "^0.27.0",
     "tslint": "^6.1.0",
