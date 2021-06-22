@@ -1,5 +1,4 @@
-import { Attachment, ExternalAttachment } from 'vk-io';
-import { MessageForwardsCollection } from 'vk-io/lib/structures/shared/message-forward-collection';
+import { Attachment, ExternalAttachment, MessageForwardsCollection } from 'vk-io';
 
 export class Answer {
     /**
