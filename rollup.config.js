@@ -10,15 +10,15 @@ const lib = join(__dirname, 'lib');
 export default {
     input: 'src/index.ts',
     output: [
-        {
-            file: `${modulePkg.main}.js`,
-            format: 'cjs',
-            exports: 'named'
-        },
-        {
-            file: `${modulePkg.main}.mjs`,
-            format: 'esm'
-        }
+      {
+        file: join(lib, 'lib/index.js'),
+        format: 'cjs',
+        exports: 'named'
+      },
+      {
+        file: join(lib, 'lib/index.mjs'),
+        format: 'esm'
+      }
     ],
     plugins: [
         typescriptPlugin({

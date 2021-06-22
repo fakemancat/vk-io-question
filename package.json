@@ -2,10 +2,6 @@
   "name": "vk-io-question",
   "version": "2.1.0",
   "description": "Система \"Вопрос-Ответ\" для библиотеки VK-IO",
-  "main": "lib/index",
-  "module": "lib/index.mjs",
-  "typings": "lib/index.d.ts",
-  "types": "lib/index.d.ts",
   "author": "Fakeman Cat",
   "license": "MIT",
   "repository": "https://github.com/fakemancat/vk-io-question",
@@ -19,6 +15,14 @@
     "vkontakte",
     "middleware"
   ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js"
+    }
+  },
   "devDependencies": {
     "@types/node": "^13.9.5",
     "rollup": "^2.7.6",
