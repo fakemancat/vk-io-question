@@ -1,9 +1,12 @@
-// За правильность иерархии не ручаюсь :)
-
 import { Middleware, NextMiddleware } from 'middleware-io';
 
 import { Answer } from './structures';
-import { IQuestion, IQuestionParams, IQuestionMessageContext, IQuestionManagerParams } from './interfaces';
+import { 
+    IQuestion,
+    IQuestionParams,
+    IQuestionMessageContext,
+    IQuestionManagerParams
+} from './interfaces';
 
 class QuestionManager {
     private questions: Map<number, IQuestion> = new Map();
@@ -13,8 +16,8 @@ class QuestionManager {
         return this.constructor.name;
     }
 
-    public constructor(params: IQuestionManagerParams) {
-        this.answerTimeLimit = params.answerTimeLimit || 0;
+    public constructor(params?: IQuestionManagerParams) {
+        this.answerTimeLimit = params?.answerTimeLimit || 0;
     }
 
     /**
@@ -48,7 +51,7 @@ class QuestionManager {
              * @param message  Отправляемое сообщение (вопрос)
              * @param params Параметры сообщения
              */
-            context.question = async (message: string, params?: IQuestionParams) => {
+            context.question = async (message: string, params: IQuestionParams = {}) => {
                 if (!message) {
                     throw new TypeError(
                         'Parameter `message` is required'
@@ -67,7 +70,15 @@ class QuestionManager {
                         startTime: Date.now()
                     });
 
-                    if (this.answerTimeLimit > 0) {
+                    let answerTimeLimit: number = 0;
+
+                    if (this.answerTimeLimit > 0)
+                        answerTimeLimit = this.answerTimeLimit;
+                    
+                    if (params.answerTimeLimit && params.answerTimeLimit > 0)
+                        answerTimeLimit = params.answerTimeLimit;
+
+                    if (answerTimeLimit > 0) {
                         setTimeout(() => {
                             const currentQuestion = this.questions.get(context.senderId);
 
@@ -78,13 +89,14 @@ class QuestionManager {
                                         forwards: null,
                                         payload: null,
                                         attachments: null,
-                                        duration: Date.now() - currentQuestion.startTime
+                                        duration: Date.now() - currentQuestion.startTime,
+                                        isTimeout: true
                                     })
                                 );
 
                                 return this.questions.delete(context.senderId);
                             }
-                        }, this.answerTimeLimit);
+                        }, answerTimeLimit);
                     }
                 });
             };

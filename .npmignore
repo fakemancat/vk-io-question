@@ -2,4 +2,5 @@ src
 node_modules
 README.md
 tsconfig.json
-tslint
+tslint.json
+examples

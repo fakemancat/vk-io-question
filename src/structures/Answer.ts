@@ -1,5 +1,8 @@
-import { Attachment, ExternalAttachment } from 'vk-io';
-import { MessageForwardsCollection } from 'vk-io/lib/structures/shared/message-forward-collection';
+import {
+    Attachment,
+    ExternalAttachment,
+    MessageForwardsCollection
+} from 'vk-io';
 
 export class Answer {
     /**
@@ -22,25 +25,37 @@ export class Answer {
      * Время, спустя которое пользователь дал ответ
      */
     public duration: number;
+    /**
+     * Время, когда был дан ответ
+     */
+    public createdAt: number;
+    /**
+     * Является ли данный ответ, неотвеченным вовремя
+     */
+    public isTimeout: boolean = false;
 
-    constructor({
+    public constructor({
         text,
         forwards,
         payload,
         attachments,
-        duration
+        duration,
+        isTimeout
     }: {
         text: string | null,
         forwards: MessageForwardsCollection | null,
         payload: any,
         attachments: (Attachment<{}> | ExternalAttachment<{}>)[] | null,
-        duration: number
+        duration: number,
+        isTimeout?: boolean
     }) {
         this.text = text;
         this.forwards = forwards;
         this.payload = payload;
         this.attachments = attachments;
         this.duration = duration;
+        this.createdAt = Date.now();
+        this.isTimeout = isTimeout ?? false
     }
 
     get [Symbol.toStringTag]() {

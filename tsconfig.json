@@ -15,5 +15,12 @@
         "allowJs": true,
         "alwaysStrict": true,
         "declaration": true
-    }
+    },
+    "include": [
+        "./src"
+    ],
+    "exclude": [
+        "./lib",
+        "./node_modules"
+    ]
 }
