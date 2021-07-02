@@ -72,10 +72,10 @@ class QuestionManager {
 
                     const answerTimeLimit = params.answerTimeLimit ?? this.answerTimeLimit;
 
-                    if (answerTimeLimit > 0) {
-                        const currentTimeout = this.timeouts.get(context.senderId);
-                        if (currentTimeout) clearTimeout(currentTimeout);
+                    const currentTimeout = this.timeouts.get(context.senderId);
+                    if (currentTimeout) clearTimeout(currentTimeout);
 
+                    if (answerTimeLimit > 0) {
                         this.timeouts.set(
                             context.senderId,
                             setTimeout(() => {
