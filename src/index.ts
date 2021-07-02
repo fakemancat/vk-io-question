@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { Middleware, NextMiddleware } from 'middleware-io';
 
 import { Answer } from './structures';
@@ -10,7 +11,8 @@ import {
 
 class QuestionManager {
     private questions: Map<number, IQuestion> = new Map();
-    private answerTimeLimit: number = 0;
+    private timeouts: Map<number, NodeJS.Timeout> = new Map();
+    private answerTimeLimit = 0;
 
     get [Symbol.toStringTag](): string {
         return this.constructor.name;
@@ -61,42 +63,42 @@ class QuestionManager {
                 await context.send(message, params);
 
                 return new Promise((resolve) => {
-                    const userId = params && params.targetUserId
-                        ? params.targetUserId
-                        : context.senderId;
+                    const userId = params?.targetUserId ?? context.senderId;
 
                     this.questions.set(userId, {
                         resolve,
                         startTime: Date.now()
                     });
 
-                    let answerTimeLimit: number = 0;
-
-                    if (this.answerTimeLimit > 0)
-                        answerTimeLimit = this.answerTimeLimit;
-                    
-                    if (params.answerTimeLimit && params.answerTimeLimit > 0)
-                        answerTimeLimit = params.answerTimeLimit;
+                    const answerTimeLimit = params.answerTimeLimit ?? this.answerTimeLimit;
 
                     if (answerTimeLimit > 0) {
-                        setTimeout(() => {
-                            const currentQuestion = this.questions.get(context.senderId);
+                        const currentTimeout = this.timeouts.get(context.senderId);
+                        if (currentTimeout) clearTimeout(currentTimeout);
 
-                            if (currentQuestion) {
-                                resolve(
-                                    new Answer({
-                                        text: null,
-                                        forwards: null,
-                                        payload: null,
-                                        attachments: null,
-                                        duration: Date.now() - currentQuestion.startTime,
-                                        isTimeout: true
-                                    })
-                                );
+                        this.timeouts.set(
+                            context.senderId,
+                            setTimeout(() => {
+                                const currentQuestion = this.questions.get(context.senderId);
+    
+                                if (currentQuestion) {
+                                    resolve(
+                                        new Answer({
+                                            text: null,
+                                            forwards: null,
+                                            payload: null,
+                                            attachments: null,
+                                            duration: Date.now() - currentQuestion.startTime,
+                                            isTimeout: true
+                                        })
+                                    );
+    
+                                    return this.questions.delete(context.senderId);
+                                }
 
-                                return this.questions.delete(context.senderId);
-                            }
-                        }, answerTimeLimit);
+                                this.timeouts.delete(context.senderId);
+                            }, answerTimeLimit)
+                        );
                     }
                 });
             };
