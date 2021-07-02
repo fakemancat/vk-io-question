@@ -20,7 +20,7 @@ export class Answer {
     /**
      * Коллекция вложения ответного сообщениыя
      */
-    public attachments: (Attachment<{}> | ExternalAttachment<{}>)[] | null;
+    public attachments: (Attachment | ExternalAttachment)[] | null;
     /**
      * Время, спустя которое пользователь дал ответ
      */
@@ -32,7 +32,7 @@ export class Answer {
     /**
      * Является ли данный ответ, неотвеченным вовремя
      */
-    public isTimeout: boolean = false;
+    public isTimeout = false;
 
     public constructor({
         text,
@@ -45,7 +45,7 @@ export class Answer {
         text: string | null,
         forwards: MessageForwardsCollection | null,
         payload: any,
-        attachments: (Attachment<{}> | ExternalAttachment<{}>)[] | null,
+        attachments: (Attachment | ExternalAttachment)[] | null,
         duration: number,
         isTimeout?: boolean
     }) {
@@ -55,10 +55,10 @@ export class Answer {
         this.attachments = attachments;
         this.duration = duration;
         this.createdAt = Date.now();
-        this.isTimeout = isTimeout ?? false
+        this.isTimeout = isTimeout ?? false;
     }
 
-    get [Symbol.toStringTag]() {
+    get [Symbol.toStringTag](): string {
         return this.constructor.name;
     }
 }

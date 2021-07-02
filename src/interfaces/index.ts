@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Params, MessageContext } from 'vk-io';
 
 import { Answer } from '../structures';
