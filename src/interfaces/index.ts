@@ -1,23 +1,21 @@
 /* eslint-disable no-unused-vars */
 import { Params, MessageContext } from 'vk-io';
 
-import { Answer } from '../structures';
-
-export interface IQuestion {
-    resolve: (value?: any) => void;
+export interface Question {
+    resolve: (context: MessageContext) => void;
     startTime: number;
 }
 
-export interface IQuestionManagerParams {
+export interface QuestionManagerParams {
     /**
      * Ограничение на время ответа. Задаётся в ms
      */
     answerTimeLimit?: number;
 }
 
-export interface IQuestionParams extends Params.MessagesSendParams {
+export interface QuestionParams extends Params.MessagesSendParams {
     /**
-     * Айди пользователя, которому нужно задать вопрос
+     * Айди пользователя, от которого модуль будет ждать ответ
      * @default context.senderId
      */
     targetUserId?: number;
@@ -30,10 +28,10 @@ export interface IQuestionParams extends Params.MessagesSendParams {
     [key: string]: any;
 }
 
-export interface IQuestionMessageContext extends MessageContext {
+export interface QuestionMessageContext {
     /**
      * @param message Текст вопроса
      * @param params Параметры отправляемого сообщения
      */
-    question: (message: string, params?: IQuestionParams) => Promise<Answer>;
+    question: (message: string, params?: QuestionParams) => Promise<MessageContext>;
 }

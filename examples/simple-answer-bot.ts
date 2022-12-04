@@ -1,5 +1,5 @@
-import { VK } from 'vk-io';
-import { QuestionManager, IQuestionMessageContext } from 'vk-io-question';
+import { VK, MessageContext } from 'vk-io';
+import { QuestionManager } from '../';
 
 const vk = new VK({
     token: process.env.TOKEN
@@ -7,16 +7,16 @@ const vk = new VK({
 
 const questionManager = new QuestionManager();
 
-vk.updates.use(questionManager.middleware);
+vk.updates.use<MessageContext>(questionManager.middleware);
 
-vk.updates.on<IQuestionMessageContext>('message', async (context) => {
+vk.updates.on('message', async (context) => {
     const answer = await context.question('Привет, как твоё имя?');
 
     while (!answer.text) {
         return context.send('Пожалуйста, ответь текстом');
     }
 
-    return context.send(`Приятно познакомиться, ${answer.text}!`)
+    return context.send(`Приятно познакомиться, ${answer.text}!`);
 });
 
 vk.updates.start().then(() => {

@@ -1,30 +1,32 @@
-import { VK } from 'vk-io';
-import { random } from 'lodash/random';
+import { VK, MessageContext } from 'vk-io';
 import { HearManager } from '@vk-io/hear';
-import { QuestionManager, IQuestionMessageContext } from 'vk-io-question';
+import { QuestionManager, QuestionMessageContext } from '../';
 
 const vk = new VK({
-    token: process.env.TOKEN
+    token: process.env.TOKEN!
 });
 
 const questionManager = new QuestionManager();
-const hearManager = new HearManager<IQuestionMessageContext>();
+const hearManager = new HearManager<QuestionMessageContext>();
 
 vk.updates.use(questionManager.middleware);
 vk.updates.on('message', hearManager.middleware);
 
 hearManager.hear('пример', async (context) => {
-    const a = random(0, 100);
-    const b = random(0, 100);
+    const a = Math.round(Math.random() * 100);
+    const b = Math.round(Math.random() * 100);
     const result = (a + b).toString();
 
     const answer = await context.question(
         `Решите пример: ${a} + ${b} = ?\n\nУ Вас есть 7 секунд.`, {
             answerTimeLimit: 7_000
         }
-    );
+    ).catch((err) => {
+        return null;
+    });
 
-    if (answer.isTimeout) {
+    // Значит ответ был дан позже лимита по времени
+    if (answer === null) {
         return context.send('Вы не успели ответить :(');
     }
 
