@@ -1,3 +1,11 @@
+/**
+ * Данный пример показывает как использовать
+ * ограничение по времени на ответ и как можно
+ * обработать ошибку таймаута
+ * 
+ * Обработать ошибку можно и с помощью try {} catch() {}
+ */
+
 import { VK, MessageContext } from 'vk-io';
 import { HearManager } from '@vk-io/hear';
 import { QuestionManager, QuestionMessageContext, TimeoutError } from '../';

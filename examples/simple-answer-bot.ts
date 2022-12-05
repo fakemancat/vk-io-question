@@ -1,3 +1,7 @@
+/**
+ * Данный пример показывает базовое использование библиотеки
+ */
+
 import { VK, MessageContext } from 'vk-io';
 import { QuestionManager, QuestionMessageContext } from '../';
 
