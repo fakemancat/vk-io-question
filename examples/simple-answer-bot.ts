@@ -18,7 +18,7 @@ type Context = MessageContext & QuestionMessageContext;
 vk.updates.on('message', async (context: Context) => {
     const answer = await context.question('Привет, как твоё имя?');
 
-    if (!answer.text) {
+    if (!answer.hasText) {
         return context.send('Пожалуйста, ответь текстом');
     }
 

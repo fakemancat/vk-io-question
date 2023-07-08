@@ -1,9 +1,8 @@
 {
   "name": "vk-io-question",
-  "version": "4.0.0-beta.0",
+  "version": "4.0.0",
   "description": "Система \"Вопрос-Ответ\" для библиотеки VK-IO",
   "main": "lib/index",
-  "type": "module",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
   "types": "lib/index.d.ts",
@@ -28,7 +27,8 @@
     "vk-io",
     "question",
     "vkontakte",
-    "middleware"
+    "middleware",
+    "prompt"
   ],
   "engines": {
     "node": ">=16.0.0"
@@ -42,6 +42,6 @@
   },
   "peerDependencies": {
     "middleware-io": "^2.8.1",
-    "vk-io": "^4.7.0"
+    "vk-io": "^4.8.3"
   }
 }

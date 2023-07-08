@@ -5,9 +5,9 @@
 
 [![npm package](https://nodei.co/npm/vk-io-question.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/vk-io-question/)
 <p>
-<a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/npm/v/vk-io-question.svg" alt="Version"></a>
-<a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/npm/dt/vk-io-question.svg" alt="Downloads"></a>
-<a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/node/v/vk-io-question.svg" alt="Support"></a>
+<a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/npm/v/vk-io-question.svg?style=flat-square" alt="Version"></a>
+<a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/npm/dt/vk-io-question.svg?style=flat-square" alt="Downloads"></a>
+<a href="https://www.npmjs.com/package/vk-io-question"><img src="https://img.shields.io/node/v/vk-io-question.svg?style=flat-square" alt="Support"></a>
 </p>
 
 ### Установка
@@ -38,7 +38,7 @@ const questionManager = new QuestionManager();
 const hearManager = new HearManager();
 
 vk.updates.use(questionManager.middleware);
-vk.updates.on('message', hearManager.middleware);
+vk.updates.on(['message_new'], hearManager.middleware);
 
 hearManager.hear('/reg', async (context) => {
     const answer = await context.question(
@@ -67,12 +67,14 @@ vk.updates.startPolling();
 
 TypeScript
 ```ts
-import { VK } from 'vk-io';
+import { VK, MessageContext } from 'vk-io';
 import { HearManager } from '@vk-io/hear';
 import {
     QuestionManager,
-    IQuestionMessageContext
+    QuestionMessageContext
 } from 'vk-io-question';
+
+type Context = MessageContext & QuestionMessageContext;
 
 const vk = new VK({
     token: process.env.TOKEN,
@@ -80,10 +82,10 @@ const vk = new VK({
 });
 
 const questionManager = new QuestionManager();
-const hearManager = new HearManager<IQuestionMessageContext>();
+const hearManager = new HearManager<Context>();
 
 vk.updates.use(questionManager.middleware);
-vk.updates.on(hearManager.middleware);
+vk.updates.on(['message_new'], hearManager.middleware);
 
 hearManager.hear('/reg', async (context) => {
     const answer = await context.question(
@@ -113,7 +115,7 @@ vk.updates.startPolling();
 Параметры конструктора
 |Параметр|Тип|Обязатален|Описание|
 |-|-|-|-|
-|answerTimeLimit|number (ms)|Нет|Устанавливает ограничение по времени на ответ. В случае истечения этого времени, в объекте Answer все поля будут ```null```|
+|answerTimeLimit|number (ms)|Нет|Устанавливает ограничение по времени на ответ. После истечения лимита будет выброшено исключение ```TimeoutError```|
 
 ----
 Метод отправки вопроса
@@ -125,20 +127,9 @@ const answer = await context.question(message, params);
 |Параметр|Тип|Описание|
 |-|-|-|
 |message|string|Задаваемый вопрос|
-|params|MessageContext|Параметры ссобщения|
+|params|MessagesSendParams|Параметры ссобщения|
 
-Ответ
-
-|Параметр|Тип|Описание|
-|-|-|-|
-|answer|Promise\<Answer\>|Основной объект ответа|
-|answer.text|string \| null|Текст сообщения|
-|answer.payload|*|payload ответного сообщения (полезно при использовании клавиатуры)|
-|answer.duration|number|Время ответа в ms|
-|answer.forwards|MessageForwardsCollection[]|Пересланные сообщения|
-|answer.attachments|Attachment[]|Вложения ответного сообщения|
-|answer.createdAt|number|Время, когда был дан ответ|
-|answer.isTimeout|boolean|Является ли данный ответ, неотвеченным вовремя|
+В переменной ```answer``` будет MessageContext ответного сообщения
 
 ### Специальные возможности
 
@@ -182,15 +173,15 @@ hearManager.hear('/choice', async (context) => {
         }
     );
 
-    if (!answer.payload) {
+    if (!answer.messagePayload) {
         return context.send('Отвечать нужно было нажатием на кнопку');
     }
 
-    if (answer.payload.choice === 'green') {
+    if (answer.messagePayload.choice === 'green') {
         return context.send('Человеский глаз наиболее хорошо различает оттенки именно зеленого цвета.');
     }
 
-    if (answer.payload.choice === 'blue') {
+    if (answer.messagePayload.choice === 'blue') {
         return context.send('Синий краситель долгое время был одним из самых дорогих, потому что его изготавливали из лазурита.');
     }
 });
@@ -198,7 +189,7 @@ hearManager.hear('/choice', async (context) => {
 
 ----
 
-##### attachments
+##### attachments, forwards, replyMessage, etc.
 
 Мы можем получать в ответ любое вложение. Например давайте сделаем функцию обработки фотографии:
 
@@ -208,12 +199,23 @@ hearManager.hear('/обработка фото', async (context) => {
         'Отправьте фото, которое хотите обработать'
     );
 
+    // Благодаря тому, что в ответе объект MessageContext, мы имеем доступ к его функционалу
+    if (!answer.hasAttachments('photo')) {
+        return context.send('В ответе должно быть фото');
+    }
+
+    const [photo] = answer.getAllAttachments('photo');
+
     const filter = await context.question(
         'Теперь название фильтра *список доступных фильтров*'
     );
 
+    if (!filter.hasText) {
+        return context.send('В ответе должен быть текст');
+    }
+
     const newPhoto = await myAwesomeFunction(
-        answer.attachments[0].largePhoto, filter
+        photo.largeSizeUrl, filter.text
     );
 
     return context.sendPhotos(newPhoto, {
@@ -222,7 +224,7 @@ hearManager.hear('/обработка фото', async (context) => {
 });
 ```
 
-Такая же история работает и с ```Answer.forwards```
+Таким же образом, благодаря MessageContext в ответном объекте у нас есть доступ к таким полям и методам как ```forwards```, ```messagePayload```, ```replyMessage``` и так далее
 
 ----
 
@@ -234,13 +236,25 @@ hearManager.hear('/обработка фото', async (context) => {
 hearManager.hear('/q', async (context) => {
     const answer = await context.question('Сколько будет 2 + 2?', {
         answerTimeLimit: 5_000 // Ограничение в 5 секунд
+    }).catch((error) => {
+        if (error instanceof TimeoutError) {
+            console.error('Превышено время ожидания ответа');
+            return null;
+        }
+
+        console.error(error);
+        return null;
     });
 
-    if (answer.isTimeout) {
-        return context.send('Вы не успели ответить вовремя');
+    /**
+     * Пользователь не успел ответить
+     * или возникла другая ошибка
+     */
+    if (answer === null) {
+        return context.send('Вы не успели ответить :(');
     }
 
-    else if (answer.text && answer.text === '4') {
+    if (answer.hasText && answer.text === '4') {
         return context.send('Правильно!');
     }
 

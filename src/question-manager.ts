@@ -13,7 +13,7 @@ import { TimeoutError } from './errors';
 class QuestionManager {
     private questions: Map<number, Question> = new Map();
     private timeouts: Map<number, NodeJS.Timeout> = new Map();
-    private answerTimeLimit = 0;
+    private readonly answerTimeLimit: number = 0;
 
     get [Symbol.toStringTag](): string {
         return this.constructor.name;
@@ -77,7 +77,7 @@ class QuestionManager {
     /**
      * Middleware-функция - является основным функционалом.
      */
-    get middleware(): Middleware<MessageContext & QuestionMessageContext> {
+    public get middleware(): Middleware<MessageContext & QuestionMessageContext> {
         return async (
             context: MessageContext & QuestionMessageContext,
             next: NextMiddleware
